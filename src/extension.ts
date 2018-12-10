@@ -3,6 +3,8 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as child from 'child_process';
 
 interface IPollyResponse {
     AudioStream: Buffer;
@@ -39,10 +41,59 @@ export function activate(context: vscode.ExtensionContext) {
                 OutputFormat: 'mp3',
                 Text: selection,
                 TextType: (selection.includes('<speak>')) ? 'ssml' : 'text',
-                SampleRate: `8000`,
                 VoiceId: conf.pollyVoice
             }, (err: Error, data: IPollyResponse) => {
-                
+                if (err) {
+                    vscode.window.showErrorMessage(`Speech synthesis error: ${err}`);
+                    console.error(err, err.stack);
+                } else {
+                    const tmp = require('tmp');
+                    tmp.file({prefix: 'chatterbox-', postfix: '.mp3'}, (err: Error, path: string, fd: number, cleanup: Function) => {
+                        if (err) {
+                            vscode.window.showErrorMessage(`Tempfile create error: ${err}`);
+                            console.error(err, err.stack);
+                        } else {
+                            fs.write(fd, data.AudioStream, (err: Error, written: number, string: string) => {
+                                if (err) {
+                                    vscode.window.showErrorMessage(`Tempfile write error: ${err}`);
+                                    console.error(err, err.stack);
+                                } else {
+                                    fs.close(fd, (err) => {
+                                        if (err) {
+                                            vscode.window.showErrorMessage(`Tempfile close error: ${err}`);
+                                            console.error(err, err.stack);
+                                        } else {
+                                            let cmd = '';
+                                            switch (process.platform) {
+                                                case 'darwin': {
+                                                    cmd = `open -a "QuickTime Player" ${path}`;
+                                                    break;
+                                                }
+                                                case 'win32': {
+                                                    cmd = `start ${path}`;
+                                                    break;
+                                                }
+                                                default: {
+                                                    cmd = `xdg-open ${path}`;
+                                                    break;
+                                                }
+                                            }
+                                            child.exec(cmd, {}, (err: Error | null, stdout: string, stderr: string) => {
+                                                if (err) {
+                                                    vscode.window.showErrorMessage(`Launch error: ${err}`);
+                                                    console.log(`Launch stdout: ${stdout}`);
+                                                    console.error(`Launch stderr: ${stderr}`);
+                                                    console.error(err, err.stack);
+                                                }
+                                                cleanup();
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
             });
         }
     });
