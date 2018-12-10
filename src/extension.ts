@@ -37,10 +37,13 @@ export function activate(context: vscode.ExtensionContext) {
             if (`"'`.includes(selection[selection.length - 1])) {
                 selection = selection.substring(0, selection.length - 2);
             }
+            if (!selection.includes('<speak>')) {
+                selection = `<speak>${selection}</speak>`;
+            }
             polly.synthesizeSpeech({
                 OutputFormat: 'mp3',
                 Text: selection,
-                TextType: (selection.includes('<speak>')) ? 'ssml' : 'text',
+                TextType: 'ssml',
                 VoiceId: conf.pollyVoice
             }, (err: Error, data: IPollyResponse) => {
                 if (err) {
