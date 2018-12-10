@@ -66,7 +66,7 @@ export function activate(context: vscode.ExtensionContext) {
                                             let cmd = '';
                                             switch (process.platform) {
                                                 case 'darwin': {
-                                                    cmd = `open -a "QuickTime Player" ${path}`;
+                                                    cmd = `osascript -e 'tell application "QuickTime Player"' -e 'set theMovie to open POSIX file "${path}"' -e 'tell theMovie to play' -e 'end tell'`;
                                                     break;
                                                 }
                                                 case 'win32': {
@@ -78,6 +78,7 @@ export function activate(context: vscode.ExtensionContext) {
                                                     break;
                                                 }
                                             }
+                                            console.log(`Open command: ${cmd}`);
                                             child.exec(cmd, {}, (err: Error | null, stdout: string, stderr: string) => {
                                                 if (err) {
                                                     vscode.window.showErrorMessage(`Launch error: ${err}`);
