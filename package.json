@@ -10,16 +10,44 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.sayHello"
+        "onCommand:extension.chatterbox"
     ],
     "main": "./out/extension",
     "contributes": {
+        "configuration": {
+            "title": "Chatterbox",
+            "properties": {
+                "chatterbox.awsProfile": {
+                    "type": "string",
+                    "default": "default",
+                    "description": "Name of AWS profile to use, as defined in ~/.aws/credentials"
+                },
+                "chatterbox.awsRegion": {
+                    "type": "string",
+                    "default": "us-east-1",
+                    "description": "AWS Region to be used"
+                },
+                "chatterbox.pollyVoice": {
+                    "type": "string",
+                    "default": "Salli",
+                    "description": "AWS Polly voice to use for speech"
+                }
+            }
+        },
         "commands": [
             {
-                "command": "extension.sayHello",
-                "title": "Hello World"
+                "command": "extension.chatterbox",
+                "title": "Speak Selected SSML"
             }
-        ]
+        ],
+        "menus": {
+            "editor/context": [
+                {
+                    "command": "extension.chatterbox",
+                    "group": "YourGroup@1"
+                }
+            ]
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
