@@ -85,7 +85,6 @@ export function activate(context: vscode.ExtensionContext) {
                                                     console.error(`Launch stderr: ${stderr}`);
                                                     console.error(err, err.stack);
                                                 }
-                                                cleanup();
                                             });
                                         }
                                     });
