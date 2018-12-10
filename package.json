@@ -2,7 +2,7 @@
     "name": "chatterbox",
     "displayName": "chatterbox",
     "description": "Speak selected SSML text using AWS Polly",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "engines": {
         "vscode": "^1.29.0"
     },
