@@ -35,8 +35,9 @@ export function activate(context: vscode.ExtensionContext) {
                 selection = selection.substring(1);
             }
             if (`"'`.includes(selection[selection.length - 1])) {
-                selection = selection.substring(0, selection.length - 2);
+                selection = selection.substring(0, selection.length - 1);
             }
+            console.log(`Saying: ${selection}`);
             if (!selection.includes('<speak>')) {
                 selection = `<speak>${selection}</speak>`;
             }
